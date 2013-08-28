@@ -42,7 +42,9 @@ module.exports = function(grunt) {
         },
 
         javascript: function(file, options) {
-            var contents = grunt.file.read(file).replace("\n", " ");
+            var contents = grunt.file.read(file).replace("\n", " ")
+                                                .replace(/"\s*\+\s*"/g, "")
+                                                .replace(/'\s*\+\s*'/g, "");
 
             var fn = options.functionName;
 
