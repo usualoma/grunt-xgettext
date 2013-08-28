@@ -136,6 +136,20 @@ Assuming the default functionName is used, translatable messages look like this:
 In both cases, all string arguments inside the tr() function call are extracted as translatable
 messages.
 
+Be aware that concatenating translatable strings with variables data is inherently not
+possible. For example, this will __NOT__ work:
+
+    tr("Some value: " + value)
+
+The reason this fails is because the input to the tr() function will be different every time
+it is called, and therefore does not have a stable key for looking up the proper translation.
+
+Note that concatenating multiple strings to create a single (multi-line) translatable string
+_does_ work, provided all parts use the same type of quotes. Example:
+
+    tr("This is the first line " +
+       "of a multiline translatable message")
+
 
 ## The "po2json" task
 
