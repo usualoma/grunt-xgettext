@@ -26,13 +26,13 @@ module.exports = function(grunt) {
             var messages = {};
 
             var result;
-            var regex = new RegExp("\\{\\{" + fn + " +'((?:[^']|\\\\')+)'[^}]*\\}\\}", "g");
+            var regex = new RegExp("\\{\\{\\s*" + fn + "\\s+'((?:[^']|\\\\')+)'[^}]*\\s*\\}\\}", "g");
             while ((result = regex.exec(contents)) !== null) {
                 var string = options.processMessage(result[1].replace(/\\'/g, "'"));
                 messages[string] = "";
             }
 
-            regex = new RegExp("\\{\\{" + fn + " +\"((?:[^\"]|\\\\\")+)\"[^}]*\\}\\}", "g");
+            regex = new RegExp("\\{\\{\\s*" + fn + "\\s+\"((?:[^\"]|\\\\\")+)\"[^}]*\\s*\\}\\}", "g");
             while ((result = regex.exec(contents)) !== null) {
                 string = options.processMessage(result[1].replace(/\\"/g, "\""));
                 messages[string] = "";
