@@ -227,9 +227,10 @@ grunt.initConfig({
         return "if [ -f \"" + po + "\" ]; then\n" +
                "    echo \"Updating " + po + "\"\n" +
                "    msgmerge " + po + " translations/messages.pot > .new.po.tmp\n" +
-               "    if [ $? -ne 0 ]; then\n" +
+               "    exitCode=$?\n" +
+               "    if [ $exitCode -ne 0 ]; then\n" +
                "        echo \"Msgmerge failed with exit code $?\"\n" +
-               "        exit $?\n" +
+               "        exit $exitCode\n" +
                "    fi\n" +
                "    mv .new.po.tmp " + po + "\n" +
                "fi\n";
