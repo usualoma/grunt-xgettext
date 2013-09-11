@@ -157,7 +157,6 @@ module.exports = function(grunt) {
                 // obsoletes
                 case "~":
                     if (line.substr(3, 6) === "msgid ") {
-                        curMsgid++;
                         curSection = "msgid";
                         output.msgid[curMsgid] = clean(line);
                         output.obsoletes.push(curMsgid);
@@ -170,7 +169,6 @@ module.exports = function(grunt) {
             } else {
                 if (line.substr(0, 6) === "msgid ") {
                     // untranslated-string
-                    curMsgid++;
                     curSection = "msgid";
                     output.msgid[curMsgid] = clean(line);
                 } else if (line.substr(0, 13) === "msgid_plural ") {
@@ -192,6 +190,8 @@ module.exports = function(grunt) {
                 } else if (line.substr(0, 1) === '"') {
                     // continuation
                     output[curSection][curMsgid] += clean(line);
+                } else if (line.trim() === "") {
+                    curMsgid++;
                 }
             }
         });
@@ -244,7 +244,8 @@ module.exports = function(grunt) {
     grunt.registerMultiTask("po2json", "Converts a .po file to a JSON resource", function() {
 
         var options = this.options({
-            requireJs: false
+            requireJs: false,
+            includeFuzzy: false
         });
 
         this.files.forEach(function(f) {
@@ -257,8 +258,11 @@ module.exports = function(grunt) {
                 for (var i = 0, len = po.msgid.length; i < len; i++) {
                     var msgid = po.msgid[i];
                     var msgstr = po.msgstr[i];
-                    if (msgstr) {
-                        translations[msgid] = msgstr;
+                    var flags = po.flags[i];
+                    if (msgid && msgstr) {
+                        if (flags !== "fuzzy" || options.includeFuzzy) {
+                            translations[msgid] = msgstr;
+                        }
                     }
                 }
             });
