@@ -136,7 +136,7 @@ Assuming the default functionName is used, translatable messages look like this:
 In both cases, all string arguments inside the tr() function call are extracted as translatable
 messages.
 
-Be aware that concatenating translatable strings with variables data is inherently not
+Be aware that concatenating translatable strings with variables is inherently not
 possible. For example, this will __NOT__ work:
 
     tr("Some value: " + value)
@@ -227,9 +227,10 @@ grunt.initConfig({
         return "if [ -f \"" + po + "\" ]; then\n" +
                "    echo \"Updating " + po + "\"\n" +
                "    msgmerge " + po + " translations/messages.pot > .new.po.tmp\n" +
-               "    if [ $? -ne 0 ]; then\n" +
+               "    exitCode=$?\n" +
+               "    if [ $exitCode -ne 0 ]; then\n" +
                "        echo \"Msgmerge failed with exit code $?\"\n" +
-               "        exit $?\n" +
+               "        exit $exitCode\n" +
                "    fi\n" +
                "    mv .new.po.tmp " + po + "\n" +
                "fi\n";
