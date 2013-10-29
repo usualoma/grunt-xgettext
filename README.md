@@ -119,9 +119,10 @@ Assuming the default functionName is used, translatable messages look like this:
 
     {{tr "Some translatable message"}}
 
-    {{tr "You have %1 followers" numFollowers}}
+    {{tr "You have %1 follower" "You have %1 followers" numFollowers}}
 
-In either case, the first string argument is extracted as a translatable message.
+In both cases, all string arguments inside the {{tr ...}} invocation are extracted as translatable
+messages.
 
 #### files.javascript
 
