@@ -23,20 +23,23 @@ module.exports = function(grunt) {
 
             var fn = options.functionName;
 
-            var messages = {};
+            var messages = {}, result;
 
-            var result;
-            var regex = new RegExp("\\{\\{\\s*" + fn + "\\s+'((?:[^']|\\\\')+)'[^}]*\\s*\\}\\}", "g");
-            while ((result = regex.exec(contents)) !== null) {
-                var string = options.processMessage(result[1].replace(/\\'/g, "'"));
-                messages[string] = "";
+            function extractStrings(quote) {
+                var regex = new RegExp("\\{\\{\\s*" + fn + "\\s+" +
+                                       quote +
+                                       "((?:[^" + quote + "]|\\\\" + quote + ")+)" +
+                                       quote +
+                                       "[^}]*\\s*\\}\\}", "g");
+                var quoteRegex = new RegExp("\\\\" + quote, "g");
+                while ((result = regex.exec(contents)) !== null) {
+                    var string = options.processMessage(result[1].replace(quoteRegex, quote));
+                    messages[string] = "";
+                }
             }
 
-            regex = new RegExp("\\{\\{\\s*" + fn + "\\s+\"((?:[^\"]|\\\\\")+)\"[^}]*\\s*\\}\\}", "g");
-            while ((result = regex.exec(contents)) !== null) {
-                string = options.processMessage(result[1].replace(/\\"/g, "\""));
-                messages[string] = "";
-            }
+            extractStrings("'");
+            extractStrings('"');
 
             return messages;
         },
@@ -48,30 +51,29 @@ module.exports = function(grunt) {
 
             var fn = options.functionName;
 
-            var messages = {};
+            var messages = {}, result;
 
-            var result;
-            var regex = new RegExp("(?:[^\w]|^)" + fn + "\\(((?:'(?:[^']|\\\\')+'\\s*[,)]\\s*)+)",
-                                   "g");
-            var subRE = new RegExp("'((?:[^']|\\\\')+)'", "g");
-            while ((result = regex.exec(contents)) !== null) {
-                var strings = result[1];
-                while ((result = subRE.exec(strings)) !== null) {
-                    var string = options.processMessage(result[1].replace(/\\'/g, "'"));
-                    messages[string] = "";
+            function extractStrings(quote) {
+                var regex = new RegExp("(?:[^\w]|^)" + fn + "\\(((?:" +
+                                       quote +
+                                       "(?:[^" + quote + "\\\\]|\\\\.)+" +
+                                       quote +
+                                       "\\s*[,)]\\s*)+)", "g");
+                var subRE = new RegExp(quote +
+                                       "((?:[^" + quote + "\\\\]|\\\\.)+)" +
+                                       quote, "g");
+                var quoteRegex = new RegExp("\\\\" + quote, "g");
+                while ((result = regex.exec(contents)) !== null) {
+                    var strings = result[1];
+                    while ((result = subRE.exec(strings)) !== null) {
+                        var string = options.processMessage(result[1].replace(quoteRegex, quote));
+                        messages[string] = "";
+                    }
                 }
             }
 
-            regex = new RegExp("(?:[^\w]|^)" + fn + "\\(((?:\"(?:[^\"]|\\\\\")+\"\\s*[,)]\\s*)+)",
-                               "g");
-            subRE = new RegExp("\"((?:[^\"]|\\\\\")+)\"", "g");
-            while ((result = regex.exec(contents)) !== null) {
-                strings = result[1];
-                while ((result = subRE.exec(strings)) !== null) {
-                    string = options.processMessage(result[1].replace(/\\"/g, "\""));
-                    messages[string] = "";
-                }
-            }
+            extractStrings("'");
+            extractStrings('"');
 
             return messages;
         }
