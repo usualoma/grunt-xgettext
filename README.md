@@ -152,33 +152,6 @@ _does_ work, provided all parts use the same type of quotes. Example:
        "of a multiline translatable message")
 
 
-## The "po2json" task
-
-### Overview
-In your project's Gruntfile, add a section named `po2json` to the data object passed into
-`grunt.initConfig()`.
-
-```js
-grunt.initConfig({
-  xgettext: {
-    options: {
-      requireJs: false
-    },
-    your_target: {
-      // target-specific file lists and/or options go here.
-    },
-  },
-})
-```
-
-### Options
-
-#### options.requireJs
-Type: `Boolean`
-Default value: `false`
-
-If set to true, the JSON resource is wrapped in an anonymouse Require.js definition.
-
 ### Usage Examples
 
 #### Real-world example
