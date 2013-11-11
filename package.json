@@ -1,23 +1,23 @@
 {
-  "name": "grunt-gettext",
-  "description": "Gettext for JavaScript and Grunt.js",
-  "version": "0.1.1",
-  "homepage": "https://github.com/arendjr/grunt-gettext",
+  "name": "grunt-xgettext",
+  "description": "Grunt xgettext plugin for JavaScript and Handlebars",
+  "version": "0.2",
+  "homepage": "https://github.com/arendjr/grunt-xgettext",
   "author": {
     "name": "Arend van Beelen",
     "email": "arendjr@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/arendjr/grunt-gettext.git"
+    "url": "git://github.com/arendjr/grunt-xgettext.git"
   },
   "bugs": {
-    "url": "https://github.com/arendjr/grunt-gettext/issues"
+    "url": "https://github.com/arendjr/grunt-xgettext/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/arendjr/grunt-gettext/blob/master/LICENSE-MIT"
+      "url": "https://github.com/arendjr/grunt-xgettext/blob/master/LICENSE-MIT"
     }
   ],
   "main": "Gruntfile.js",
