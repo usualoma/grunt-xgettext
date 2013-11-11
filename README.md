@@ -1,6 +1,6 @@
-# grunt-gettext
+# grunt-xgettext
 
-> Gettext for JavaScript and Grunt.js
+> Grunt xgettext plugin for JavaScript and Handlebars
 
 ## Introduction
 
@@ -22,10 +22,10 @@ plugin, but an example of calling the utility through the Grunt Shell plugin is 
 part of the real-world example.
 
 The third step is taking the translated PO files and getting the translations to show up in your
-project. In order to facilitate this, this plugin provides the **po2json** task which converts the
-translations to a JSON map, optionally wrapped in a Require.js definition. To finish this step,
-you will have to make sure the JSON translations are loaded into your application and actually
-used by the `tr()` or `i18n()` function you use.
+project. In order to facilitate this, use the **po2json** from the grunt-po2json plugin which
+converts the translations to a JSON map, optionally wrapped in a Require.js definition. To finish
+this step, you will have to make sure the JSON translations are loaded into your application and
+actually used by the `tr()` or `i18n()` function you use.
 
 Happy translating!
 
