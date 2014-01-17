@@ -180,17 +180,14 @@ grunt.initConfig({
 
   po2json: {
     target: {
-      files: _.object(
-          _.map(locales, function(locale) { return "translations/" + locale + ".js"; }),
-          _.map(locales, function(locale) { return "translations/" + locale + ".po"; })
-        )
-      },
+      src: ["translations/*.po"],
+      dest: ["translations/"],
       options: {
         requireJs: true
       }
     }
   },
-  
+
   shell: {
     options: {
       failOnError: true

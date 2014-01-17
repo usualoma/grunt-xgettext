@@ -80,30 +80,6 @@ module.exports = function(grunt) {
                     javascript: []
                 }
             }
-        },
-
-        /**
-         * Converts translated PO files to JSON resources.
-         */
-        po2json: {
-            default_options: {
-                options: {
-                    /**
-                     * If set to true, the JSON resource is wrapped in an
-                     * anonymouse Require.js definition.
-                     */
-                    requireJs: false
-                },
-
-                /**
-                 * PO files to process.
-                 *
-                 * The keys in this object are the paths of the JSON resources
-                 * to produce, the values are the PO files to process.
-                 */
-                files: {
-                }
-            }
         }
 
     });
