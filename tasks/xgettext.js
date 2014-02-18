@@ -21,14 +21,14 @@ module.exports = function(grunt) {
         handlebars: function(file, options) {
             var contents = grunt.file.read(file).replace("\n", " ");
 
-            var fn = options.functionName;
+            var fn = _.flatten([ options.functionName ]);
 
             var messages = {}, result;
 
-            function extractStrings(quote) {
+            var extractStrings = function(quote, fn) {
                 var regex = new RegExp("\\{\\{\\s*" + fn + "\\s+((?:" +
-                                       quote + "(?:[^" + quote + "\\\\]|\\\\.)+" + quote +
-                                       "\\s*)+)[^}]*\\s*\\}\\}", "g");
+                    quote + "(?:[^" + quote + "\\\\]|\\\\.)+" + quote +
+                    "\\s*)+)[^}]*\\s*\\}\\}", "g");
                 var subRE = new RegExp(quote + "((?:[^" + quote + "\\\\]|\\\\.)+)" + quote, "g");
                 var quoteRegex = new RegExp("\\\\" + quote, "g");
                 while ((result = regex.exec(contents)) !== null) {
@@ -40,25 +40,27 @@ module.exports = function(grunt) {
                 }
             }
 
-            extractStrings("'");
-            extractStrings('"');
+            _.each( fn, function( func ) {
+                extractStrings("'", func );
+                extractStrings('"', func );
+            });
 
             return messages;
         },
 
         javascript: function(file, options) {
             var contents = grunt.file.read(file).replace("\n", " ")
-                                                .replace(/"\s*\+\s*"/g, "")
-                                                .replace(/'\s*\+\s*'/g, "");
+                .replace(/"\s*\+\s*"/g, "")
+                .replace(/'\s*\+\s*'/g, "");
 
-            var fn = options.functionName;
+            var fn = _.flatten([ options.functionName ]);
 
             var messages = {}, result;
 
-            function extractStrings(quote) {
-                var regex = new RegExp("(?:[^\w]|^)" + fn + "\\(((?:" +
-                                       quote + "(?:[^" + quote + "\\\\]|\\\\.)+" + quote +
-                                       "\\s*[,)]\\s*)+)", "g");
+            var extractStrings = function(quote, fn) {
+                var regex = new RegExp("(?:[^\\w]|^)" + fn + "\\s*\\(\\s*((?:" +
+                    quote + "(?:[^" + quote + "\\\\]|\\\\.)+" + quote +
+                    "\\s*[,)]\\s*)+)", "g");
                 var subRE = new RegExp(quote + "((?:[^" + quote + "\\\\]|\\\\.)+)" + quote, "g");
                 var quoteRegex = new RegExp("\\\\" + quote, "g");
                 while ((result = regex.exec(contents)) !== null) {
@@ -70,8 +72,10 @@ module.exports = function(grunt) {
                 }
             }
 
-            extractStrings("'");
-            extractStrings('"');
+            _.each( fn, function( func ) {
+                extractStrings("'", func );
+                extractStrings('"', func );
+            });
 
             return messages;
         }
@@ -109,14 +113,14 @@ module.exports = function(grunt) {
 
         contents += _.map(translations, function(translation, message) {
             return "msgid " + escapeString(message) + "\n" +
-                   "msgstr " + escapeString(translation) + "";
+                "msgstr " + escapeString(translation) + "";
         }).join("\n\n");
 
         grunt.file.write(options.potFile, contents);
 
         var count = Object.keys(translations).length;
         grunt.log.writeln(count + " messages successfully extracted, " +
-                          options.potFile + " written.");
+            options.potFile + " written.");
 
     });
 
