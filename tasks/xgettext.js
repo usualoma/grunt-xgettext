@@ -38,7 +38,7 @@ module.exports = function(grunt) {
                     while ((result = subRE.exec(strings)) !== null) {
                         var string = options.processMessage(result[1].replace(quoteRegex, quote));
                         // if singular form already defined add message as plural
-                        if (singular !== void 0) {
+                        if (typeof singular !== 'undefined') {
                             messages[singular].plural = string;
                         // if not defined init message object
                         } else {
