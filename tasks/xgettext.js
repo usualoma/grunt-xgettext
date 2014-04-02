@@ -17,13 +17,38 @@ module.exports = function(grunt) {
         return '"' + string.replace(/"/g, '\\"') + '"';
     }
 
+    function getMessages(contents, regex, subRE, quoteRegex, quote, options) {
+        var messages = {}, result;
+
+        while ((result = regex.exec(contents)) !== null) {
+            var strings = result[1],
+                singular = void 0;
+
+            while ((result = subRE.exec(strings)) !== null) {
+                var string = options.processMessage(result[1].replace(quoteRegex, quote));
+
+                // if singular form already defined add message as plural
+                if (typeof singular !== 'undefined') {
+                    messages[singular].plural = string;
+                // if not defined init message object
+                } else {
+                    singular = string;
+                    messages[string] = {
+                        singular: singular,
+                        message: ""
+                    };
+                }
+            }
+        }
+
+        return messages;
+    }
+
     var extractors = {
         handlebars: function(file, options) {
-            var contents = grunt.file.read(file).replace("\n", " ");
-
-            var fn = _.flatten([ options.functionName ]);
-
-            var messages = {}, result;
+            var contents = grunt.file.read(file).replace("\n", " "),
+                fn = _.flatten([ options.functionName ]),
+                messages = {};
 
             var extractStrings = function(quote, fn) {
                 var regex = new RegExp("\\{\\{\\s*" + fn + "\\s+((?:" +
@@ -31,30 +56,13 @@ module.exports = function(grunt) {
                     "\\s*)+)[^}]*\\s*\\}\\}", "g");
                 var subRE = new RegExp(quote + "((?:[^" + quote + "\\\\]|\\\\.)+)" + quote, "g");
                 var quoteRegex = new RegExp("\\\\" + quote, "g");
-                // need to factorize
-                while ((result = regex.exec(contents)) !== null) {
-                    var strings = result[1],
-                        singular = void 0;
-                    while ((result = subRE.exec(strings)) !== null) {
-                        var string = options.processMessage(result[1].replace(quoteRegex, quote));
-                        // if singular form already defined add message as plural
-                        if (typeof singular !== 'undefined') {
-                            messages[singular].plural = string;
-                        // if not defined init message object
-                        } else {
-                            singular = string;
-                            messages[string] = {
-                                singular: singular,
-                                message: ""
-                            };
-                        }
-                    }
-                }
+
+                _.extend(messages, getMessages(contents, regex, subRE, quoteRegex, quote, options));
             };
 
-            _.each( fn, function( func ) {
-                extractStrings("'", func );
-                extractStrings('"', func );
+            _.each(fn, function(func) {
+                extractStrings("'", func);
+                extractStrings('"', func);
             });
 
             return messages;
@@ -65,9 +73,8 @@ module.exports = function(grunt) {
                 .replace(/"\s*\+\s*"/g, "")
                 .replace(/'\s*\+\s*'/g, "");
 
-            var fn = _.flatten([ options.functionName ]);
-
-            var messages = {}, result;
+            var fn = _.flatten([ options.functionName ]),
+                messages = {};
 
             var extractStrings = function(quote, fn) {
                 var regex = new RegExp("(?:[^\\w]|^)" + fn + "\\s*\\(\\s*((?:" +
@@ -75,30 +82,13 @@ module.exports = function(grunt) {
                     "\\s*[,)]\\s*)+)", "g");
                 var subRE = new RegExp(quote + "((?:[^" + quote + "\\\\]|\\\\.)+)" + quote, "g");
                 var quoteRegex = new RegExp("\\\\" + quote, "g");
-                // need to factorize
-                while ((result = regex.exec(contents)) !== null) {
-                    var strings = result[1],
-                        singular = void 0;
-                    while ((result = subRE.exec(strings)) !== null) {
-                        var string = options.processMessage(result[1].replace(quoteRegex, quote));
-                        // if singular form already defined add message as plural
-                        if (singular !== void 0) {
-                            messages[singular].plural = string;
-                        // if not defined init message object
-                        } else {
-                            singular = string;
-                            messages[string] = {
-                                singular: singular,
-                                message: ""
-                            };
-                        }
-                    }
-                }
+
+                _.extend(messages, getMessages(contents, regex, subRE, quoteRegex, quote, options));
             };
 
-            _.each( fn, function( func ) {
-                extractStrings("'", func );
-                extractStrings('"', func );
+            _.each(fn, function(func) {
+                extractStrings("'", func);
+                extractStrings('"', func);
             });
 
             return messages;
