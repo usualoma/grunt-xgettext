@@ -17,24 +17,43 @@ module.exports = function(grunt) {
         return '"' + string.replace(/"/g, '\\"') + '"';
     }
 
-    function getMessages(contents, regex, subRE, quoteRegex, quote, options) {
+    /**
+     * Get all messages of a content
+     * @param  {String} content     content on which extract gettext calls
+     * @param  {Regex} regex        first level regex
+     * @param  {Regex} subRE        second level regex
+     * @param  {Regex} quoteRegex   regex for quotes
+     * @param  {String} quote       quote: " or '
+     * @param  {Object} options     task options
+     * @return {Object}             messages in a JS pot alike
+     *                                       {
+     *                                           singularKey: {
+     *                                               singular: singularKey,
+     *                                               plural: pluralKey,     // present only if plural
+     *                                               message: ""
+     *
+     *                                           },
+     *                                           ...
+     *                                       }
+     */
+    function getMessages(content, regex, subRE, quoteRegex, quote, options) {
         var messages = {}, result;
 
-        while ((result = regex.exec(contents)) !== null) {
+        while ((result = regex.exec(content)) !== null) {
             var strings = result[1],
-                singular = void 0;
+                singularKey = void 0;
 
             while ((result = subRE.exec(strings)) !== null) {
                 var string = options.processMessage(result[1].replace(quoteRegex, quote));
 
                 // if singular form already defined add message as plural
-                if (typeof singular !== 'undefined') {
-                    messages[singular].plural = string;
+                if (typeof singularKey !== 'undefined') {
+                    messages[singularKey].plural = string;
                 // if not defined init message object
                 } else {
-                    singular = string;
-                    messages[string] = {
-                        singular: singular,
+                    singularKey = string;
+                    messages[singularKey] = {
+                        singular: string,
                         message: ""
                     };
                 }
