@@ -111,6 +111,29 @@ module.exports = function(grunt) {
             });
 
             return messages;
+        },
+
+        html: function(file, options) {
+            var contents = grunt.file.read(file).replace("\n", " "),
+                fn = _.flatten([ options.functionName ]),
+                messages = {};
+
+            var extractStrings = function(quote, fn) {
+                var regex = new RegExp("" + fn + "\\(((?:" +
+                    quote + "(?:[^" + quote + "\\\\]|\\\\.)+" + quote +
+                    "\\s*)+)\\)", "g");
+                var subRE = new RegExp(quote + "((?:[^" + quote + "\\\\]|\\\\.)+)" + quote, "g");
+                var quoteRegex = new RegExp("\\\\" + quote, "g");
+
+                _.extend(messages, getMessages(contents, regex, subRE, quoteRegex, quote, options));
+            };
+
+            _.each(fn, function(func) {
+                extractStrings("'", func);
+                extractStrings('"', func);
+            });
+
+            return messages;
         }
     };
 
