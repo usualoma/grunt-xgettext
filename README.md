@@ -48,14 +48,14 @@ If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out th
 you're familiar with that process, you may install this plugin with this command:
 
 ```shell
-npm install grunt-gettext --save-dev
+npm install grunt-xgettext --save-dev
 ```
 
 Once the plugin has been installed, it may be enabled inside your Gruntfile with this line of
 JavaScript:
 
 ```js
-grunt.loadNpmTasks('grunt-gettext');
+grunt.loadNpmTasks('grunt-xgettext');
 ```
 
 
