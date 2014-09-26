@@ -25,3 +25,13 @@ function test4() {
     i18n.tr("i18n.tr() should be extracted too");
     unknown.tr("unknown.tr() should not be extracted");
 }
+
+function test5() {
+    tr("September", { comment: "Translators: use all lower-case if months are not " +
+                               "capitalized in your language" })
+
+    tr("May")
+    tr("May", { context: "Abbreviation", comment: "Abbreviation of May" })
+    tr("September")
+    tr("Sept.", { context: "Abbreviation", comment: "Abbreviation of September" })
+}

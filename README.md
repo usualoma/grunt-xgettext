@@ -164,6 +164,17 @@ _does_ work, provided all parts use the same type of quotes. Example:
     tr("This is the first line " +
        "of a multiline translatable message")
 
+Finally, you can pass context and comments through an options object. This is currently only
+supported by the JavaScript extractor:
+
+    tr("September", { comment: "Translators: use all lower-case if months are not " +
+                               "capitalized in your language" })
+
+    tr("May")
+    tr("May", { context: "Abbreviation", comment: "Abbreviation of May" })
+    tr("September")
+    tr("Sept.", { context: "Abbreviation", comment: "Abbreviation of September" })
+
 
 ### Usage Examples
 

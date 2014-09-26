@@ -18,10 +18,6 @@ module.exports = function(file, options) {
 
     var fn = _.flatten([ options.functionName ]);
 
-    function escapeString(string) {
-        return string.replace(/\n/gm, "\\n");
-    }
-
     function flattenIdentifier(identifier) {
         if (identifier.type === "Identifier") {
             return identifier.name;
@@ -51,7 +47,7 @@ module.exports = function(file, options) {
     function parseInvocation(syntax) {
         if (syntax.arguments.length > 0) {
             var singular = flattenString(syntax.arguments[0]);
-            var plural, options;
+            var plural, options = {};
 
             if (syntax.arguments.length > 1) {
                 var second = syntax.arguments[1];
@@ -65,24 +61,50 @@ module.exports = function(file, options) {
                 }
             }
 
-            var messageObject = messages[singular];
-            if (!messageObject) {
-                messageObject = {
-                    singular: escapeString(singular),
-                    message: ""
-                };
-                messages[singular] = messageObject;
-            }
+            var message = {
+                singular: singular,
+                message: ""
+            };
             if (plural) {
-                messageObject.plural = escapeString(plural);
+                message.plural = plural;
+            }
+            if (options.comment) {
+                message.comment = options.comment;
+            }
+            if (options.context) {
+                message.context = options.context;
+            }
+
+            var key = (message.context ? message.context + ":" : "") + singular;
+            if (messages[key]) {
+                if (messages[key].comment) {
+                    if (message.comment) {
+                        messages[key].comment += "\n" + message.comment;
+                    }
+                } else {
+                    messages[key].comment = message.comment;
+                }
+            } else {
+                messages[key] = message;
             }
         } else {
             grunt.log.debug("No arguments to translation method");
         }
     }
 
-    function parseOptions() {
-        // TODO
+    function parseOptions(syntax) {
+        var options = {};
+        if (syntax.type === "ObjectExpression") {
+            _.each(syntax.properties, function(propertySyntax) {
+                var key = (propertySyntax.key.type === "Literal" ? propertySyntax.key.value
+                                                                 : propertySyntax.key.name),
+                    value = flattenString(propertySyntax.value);
+                if (key && value) {
+                    options[key] = value;
+                }
+            });
+        }
+        return options;
     }
 
     function scan(syntax) {

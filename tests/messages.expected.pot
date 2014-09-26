@@ -46,3 +46,20 @@ msgstr ""
 
 msgid "i18n.tr() should be extracted too"
 msgstr ""
+
+#. Translators: use all lower-case if months are not capitalized in your language
+msgid "September"
+msgstr ""
+
+msgid "May"
+msgstr ""
+
+#. Abbreviation of May
+msgctxt "Abbreviation"
+msgid "May"
+msgstr ""
+
+#. Abbreviation of September
+msgctxt "Abbreviation"
+msgid "Sept."
+msgstr ""
