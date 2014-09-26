@@ -22,9 +22,6 @@ msgstr ""
 msgid "Roos"
 msgstr ""
 
-msgid "Goede 's avonds!"
-msgstr ""
-
 msgid "Vis"
 msgid_plural "Vuur"
 msgstr[0] ""
@@ -38,5 +35,14 @@ msgstr ""
 msgid "Goede 's morgens!"
 msgstr ""
 
+msgid "Goede 's avonds!"
+msgstr ""
+
 msgid "Regel één\nRegel twee"
+msgstr ""
+
+msgid "Regel één\nRegel twee\nRegel drie"
+msgstr ""
+
+msgid "i18n.tr() should be extracted too"
 msgstr ""

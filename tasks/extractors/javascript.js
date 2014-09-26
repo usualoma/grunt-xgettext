@@ -8,77 +8,192 @@
 
 "use strict";
 
+var esprima = require("esprima");
 var grunt = require("grunt");
 var _ = require("lodash");
 
-/**
- * Get all messages of a content
- * @param  {String} content     content on which extract gettext calls
- * @param  {Regex} regex        first level regex
- * @param  {Regex} subRE        second level regex
- * @param  {Regex} quoteRegex   regex for quotes
- * @param  {String} quote       quote: " or '
- * @param  {Object} options     task options
- * @return {Object}             messages in a JS pot alike
- *                                       {
- *                                           singularKey: {
- *                                               singular: singularKey,
- *                                               plural: pluralKey,     // present only if plural
- *                                               message: ""
- *
- *                                           },
- *                                           ...
- *                                       }
- */
-function getMessages(content, regex, subRE, quoteRegex, quote, options) {
-    var messages = {}, result;
+module.exports = function(file, options) {
 
-    while ((result = regex.exec(content)) !== null) {
-        var strings = result[1],
-            singularKey = void 0;
+    var messages = {};
 
-        while ((result = subRE.exec(strings)) !== null) {
-            var string = options.processMessage(result[1].replace(quoteRegex, quote));
+    var fn = _.flatten([ options.functionName ]);
 
-            // if singular form already defined add message as plural
-            if (typeof singularKey !== 'undefined') {
-                messages[singularKey].plural = string;
-            // if not defined init message object
-            } else {
-                singularKey = string;
-                messages[singularKey] = {
-                    singular: string,
+    function escapeString(string) {
+        return string.replace(/\n/gm, "\\n");
+    }
+
+    function flattenIdentifier(identifier) {
+        if (identifier.type === "Identifier") {
+            return identifier.name;
+        } else if (identifier.type === "MemberExpression" && identifier.computed === false &&
+                   identifier.object.type === "Identifier") {
+            return identifier.object.name + "." + identifier.property.name;
+        } else if (identifier.type === "MemberExpression" && identifier.computed === false &&
+                   identifier.object.type === "MemberExpression") {
+            return flattenIdentifier(identifier.object) + "." + identifier.property.name;
+        } else {
+            grunt.log.debug("Found unhandled identifier: " + JSON.stringify(identifier));
+            return "";
+        }
+    }
+
+    function flattenString(string) {
+        if (string.type === "Literal" && _.isString(string.value)) {
+            return string.value;
+        } else if (string.type === "BinaryExpression" && string.operator === "+") {
+            return flattenString(string.left) + flattenString(string.right);
+        } else {
+            grunt.log.debug("Found unhandled string: " + JSON.stringify(string));
+            return "";
+        }
+    }
+
+    function parseInvocation(syntax) {
+        if (syntax.arguments.length > 0) {
+            var singular = flattenString(syntax.arguments[0]);
+            var plural, options;
+
+            if (syntax.arguments.length > 1) {
+                var second = syntax.arguments[1];
+                if (second.type === "ObjectExpression") {
+                    options = parseOptions(second);
+                } else {
+                    plural = flattenString(second);
+                    if (syntax.arguments.length > 2) {
+                        options = parseOptions(syntax.arguments[2]);
+                    }
+                }
+            }
+
+            var messageObject = messages[singular];
+            if (!messageObject) {
+                messageObject = {
+                    singular: escapeString(singular),
                     message: ""
                 };
+                messages[singular] = messageObject;
+            }
+            if (plural) {
+                messageObject.plural = escapeString(plural);
+            }
+        } else {
+            grunt.log.debug("No arguments to translation method");
+        }
+    }
+
+    function parseOptions() {
+        // TODO
+    }
+
+    function scan(syntax) {
+        grunt.log.debug("Scanning node: " + syntax.type);
+
+        switch (syntax.type) {
+        case "AssignmentExpression":
+            scan(syntax.right);
+            break;
+        case "BinaryExpression":
+            scan(syntax.left);
+            scan(syntax.right);
+            break;
+        case "CallExpression":
+            var callee = syntax.callee;
+            if (_.contains(fn, flattenIdentifier(callee))) {
+                parseInvocation(syntax);
+            } else {
+                _.each(syntax.arguments, function(argumentSyntax) {
+                    scan(argumentSyntax);
+                });
+            }
+            break;
+        case "ConditionalExpression":
+            scan(syntax.alternate);
+            scan(syntax.consequent);
+            break;
+        case "ExpressionStatement":
+            scan(syntax.expression);
+            break;
+        case "IfStatement":
+            scan(syntax.consequent);
+            if (syntax.alternate) {
+                scan(syntax.alternate);
+            }
+            break;
+        case "LogicalExpression":
+            scan(syntax.left);
+            scan(syntax.right);
+            break;
+        case "NewExpression":
+            _.each(syntax.arguments, function(argumentSyntax) {
+                scan(argumentSyntax);
+            });
+            break;
+        case "ObjectExpression":
+            _.each(syntax.properties, function(propertySyntax) {
+                scan(propertySyntax);
+            });
+            break;
+        case "Property":
+            scan(syntax.value);
+            break;
+        case "TryStatement":
+            scan(syntax.block);
+            if (syntax.handler) {
+                scan(syntax.handler);
+            }
+            _.each(syntax.guardedHandlers, function(guardedHandlerSyntax) {
+                scan(guardedHandlerSyntax);
+            });
+            if (syntax.finalizer) {
+                scan(syntax.finalizer);
+            }
+            break;
+        case "SequenceExpression":
+            _.each(syntax.expressions, function(expressionSyntax) {
+                scan(expressionSyntax);
+            });
+            break;
+        case "SwitchCase":
+            if (syntax.test) {
+                scan(syntax.test);
+            }
+            _.each(syntax.consequent, function(consequentSyntax) {
+                scan(consequentSyntax);
+            });
+            break;
+        case "SwitchStatement":
+            _.each(syntax.cases, function(caseSyntax) {
+                scan(caseSyntax);
+            });
+            break;
+        case "VariableDeclaration":
+            _.each(syntax.declarations, function(declarationSyntax) {
+                scan(declarationSyntax);
+            });
+            break;
+        case "VariableDeclarator":
+            if (syntax.init) {
+                scan(syntax.init);
+            }
+            break;
+        default:
+            if (syntax.argument) {
+                scan(syntax.argument);
+            }
+            if (syntax.body) {
+                if (_.isArray(syntax.body)) {
+                    _.each(syntax.body, function(bodySyntax) {
+                        scan(bodySyntax);
+                    });
+                } else {
+                    scan(syntax.body);
+                }
             }
         }
     }
 
-    return messages;
-}
-
-module.exports = function(file, options) {
-    var contents = grunt.file.read(file).replace("\n", " ")
-        .replace(/"\s*\+\s*"/g, "")
-        .replace(/'\s*\+\s*'/g, "");
-
-    var fn = _.flatten([ options.functionName ]),
-        messages = {};
-
-    var extractStrings = function(quote, fn) {
-        var regex = new RegExp("(?:[^\\w]|^)" + fn + "\\s*\\(\\s*((?:" +
-            quote + "(?:[^" + quote + "\\\\]|\\\\.)+" + quote +
-            "\\s*[,)]\\s*)+)", "g");
-        var subRE = new RegExp(quote + "((?:[^" + quote + "\\\\]|\\\\.)+)" + quote, "g");
-        var quoteRegex = new RegExp("\\\\" + quote, "g");
-
-        _.extend(messages, getMessages(contents, regex, subRE, quoteRegex, quote, options));
-    };
-
-    _.each(fn, function(func) {
-        extractStrings("'", func);
-        extractStrings('"', func);
-    });
+    var contents = grunt.file.read(file);
+    scan(esprima.parse(contents));
 
     return messages;
 };
