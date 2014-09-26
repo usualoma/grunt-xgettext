@@ -87,18 +87,15 @@ module.exports = function(grunt) {
             return messages;
         },
 
-        javascript: function(file, options) {
-            var contents = grunt.file.read(file).replace("\n", " ")
-                .replace(/"\s*\+\s*"/g, "")
-                .replace(/'\s*\+\s*'/g, "");
-
-            var fn = _.flatten([ options.functionName ]),
+        html: function(file, options) {
+            var contents = grunt.file.read(file).replace("\n", " "),
+                fn = _.flatten([ options.functionName ]),
                 messages = {};
 
             var extractStrings = function(quote, fn) {
-                var regex = new RegExp("(?:[^\\w]|^)" + fn + "\\s*\\(\\s*((?:" +
+                var regex = new RegExp("" + fn + "\\(((?:" +
                     quote + "(?:[^" + quote + "\\\\]|\\\\.)+" + quote +
-                    "\\s*[,)]\\s*)+)", "g");
+                    "\\s*)+)\\)", "g");
                 var subRE = new RegExp(quote + "((?:[^" + quote + "\\\\]|\\\\.)+)" + quote, "g");
                 var quoteRegex = new RegExp("\\\\" + quote, "g");
 
@@ -113,15 +110,18 @@ module.exports = function(grunt) {
             return messages;
         },
 
-        html: function(file, options) {
-            var contents = grunt.file.read(file).replace("\n", " "),
-                fn = _.flatten([ options.functionName ]),
+        javascript: function(file, options) {
+            var contents = grunt.file.read(file).replace("\n", " ")
+                .replace(/"\s*\+\s*"/g, "")
+                .replace(/'\s*\+\s*'/g, "");
+
+            var fn = _.flatten([ options.functionName ]),
                 messages = {};
 
             var extractStrings = function(quote, fn) {
-                var regex = new RegExp("" + fn + "\\(((?:" +
+                var regex = new RegExp("(?:[^\\w]|^)" + fn + "\\s*\\(\\s*((?:" +
                     quote + "(?:[^" + quote + "\\\\]|\\\\.)+" + quote +
-                    "\\s*)+)\\)", "g");
+                    "\\s*[,)]\\s*)+)", "g");
                 var subRE = new RegExp(quote + "((?:[^" + quote + "\\\\]|\\\\.)+)" + quote, "g");
                 var quoteRegex = new RegExp("\\\\" + quote, "g");
 

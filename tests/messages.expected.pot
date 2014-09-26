@@ -13,10 +13,16 @@ msgstr ""
 msgid "Boom"
 msgstr ""
 
-msgid "Goede 's avonds!"
+msgid "Mien"
+msgstr ""
+
+msgid "Aap"
 msgstr ""
 
 msgid "Roos"
+msgstr ""
+
+msgid "Goede 's avonds!"
 msgstr ""
 
 msgid "Vis"

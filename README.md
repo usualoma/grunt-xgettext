@@ -1,6 +1,6 @@
 # grunt-xgettext
 
-> Grunt xgettext plugin for JavaScript and Handlebars
+> Grunt xgettext plugin for JavaScript, HTML and Handlebars
 
 ## Introduction
 
@@ -9,10 +9,10 @@ applications.
 
 The first step of the translation process is to extract translatable messages from your sources.
 To do so, you should mark all strings which you want to translate by wrapping them in a
-translator function (often called `tr()` or `i18n()`). The **xgettext** task provided by this
+translator function (often called `tr()`, `_()` or `i18n()`). The **xgettext** task provided by this
 plugin then scans all your source files and generates a POT file containing all the translatable
 strings. In addition to scanning plain JavaScript files, this plugin also supports scanning
-Handlebars templates.
+HTML and Handlebars templates.
 
 The second step is converting the POT file into a PO file which is the file that will be actually
 translated by translators. During this step you can merge the POT file with a previously
@@ -25,7 +25,7 @@ The third step is taking the translated PO files and getting the translations to
 project. In order to facilitate this, use the **po2json** from the grunt-po2json plugin which
 converts the translations to a JSON map, optionally wrapped in a Require.js definition. To finish
 this step, you will have to make sure the JSON translations are loaded into your application and
-actually used by the `tr()` or `i18n()` function you use.
+actually used by the `tr()`, `_()` or `i18n()` function you use.
 
 Happy translating!
 
@@ -40,7 +40,7 @@ http://www.gnu.org/software/trans-coord/manual/web-trans/html_node/PO-Files.html
 
 
 ## Getting Started
-This plugin requires Grunt `~0.4.1`
+This plugin requires Grunt `~0.4.5`
 
 If you haven't used [Grunt](http://gruntjs.com/) before, be sure to check out the
 [Getting Started](http://gruntjs.com/getting-started) guide, as it explains how to create a
@@ -122,6 +122,19 @@ Assuming the default functionName is used, translatable messages look like this:
     {{tr "You have %1 follower" "You have %1 followers" numFollowers}}
 
 In both cases, all string arguments inside the {{tr ...}} invocation are extracted as translatable
+messages.
+
+#### files.html
+
+HTML files to scan for translatable messages.
+
+Assuming the default functionName is used, translatable messages look like this:
+
+    tr("Some translatable message")
+
+    tr("You have %1 follower" "You have %1 followers" numFollowers)
+
+In both cases, all string arguments inside the tr() invocation are extracted as translatable
 messages.
 
 #### files.javascript

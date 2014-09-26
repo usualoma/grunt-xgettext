@@ -23,6 +23,7 @@ module.exports = function(grunt) {
 
                 files: {
                     handlebars: ["assets/*.handlebars"],
+                    html: ["assets/*.html"],
                     javascript: ["assets/*.js"]
                 }
             }
