@@ -12,3 +12,7 @@ function test2() {
     tr('Goede \'s avonds!');
     tr("Regel één\nRegel twee");
 }
+
+function test3() {
+    $(".some-element").attr("Attribute should not be extracted");
+}

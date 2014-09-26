@@ -38,5 +38,10 @@
   },
   "keywords": [
     "gruntplugin"
-  ]
+  ],
+  "dependencies": {
+    "chalk": "^0.5.1",
+    "esprima": "^1.2.2",
+    "lodash": "^2.4.1"
+  }
 }

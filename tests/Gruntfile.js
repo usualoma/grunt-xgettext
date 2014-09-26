@@ -1,12 +1,15 @@
 /*
- * grunt-gettext
- * https://github.com/arendjr/grunt-gettext
+ * grunt-xgettext
+ * https://github.com/arendjr/grunt-xgettext
  *
- * Copyright (c) 2013 Arend van Beelen, Speakap BV
+ * Copyright (c) 2013-2014 Arend van Beelen, Speakap BV
  * Licensed under the MIT license.
  */
 
 "use strict";
+
+var chalk = require("chalk");
+var _ = require("lodash");
 
 module.exports = function(grunt) {
 
@@ -24,11 +27,53 @@ module.exports = function(grunt) {
                 }
             }
         }
-
     });
 
     grunt.loadTasks("../tasks");
 
-    grunt.registerTask("default", ["xgettext"]);
+    grunt.registerTask("compare", "Compare extracted messages with expected messages", function() {
+
+        function readPoLines(filename) {
+            var content = grunt.file.read(filename);
+            return content.split("\n");
+        }
+
+        var expectedLines = readPoLines("messages.expected.pot");
+        var extractedLines = readPoLines("messages.pot");
+
+        var debugExtractedLines = [];
+        var debugExpectedLines = [];
+
+        var hasError = false;
+        for (var i = 0; i < expectedLines.length || i < extractedLines.length; i++) {
+            var expectedLine = expectedLines[i] || "";
+            var extractedLine = extractedLines[i] || "";
+
+            if (expectedLine.slice(0, 1) === "#" && extractedLine.slice(0, 1) === "#") {
+                continue;
+            }
+
+            if (expectedLines[i] === extractedLines[i]) {
+                debugExpectedLines.push("  " + chalk.cyan(expectedLine));
+                debugExtractedLines.push("  " + chalk.cyan(extractedLine));
+            } else {
+                debugExpectedLines.push(chalk.red("> ") + chalk.cyan(expectedLine));
+                debugExtractedLines.push(chalk.red("> ") + chalk.cyan(extractedLine));
+
+                hasError = true;
+            }
+        }
+
+        if (hasError) {
+            grunt.log.error("Extracted messages did not match expected messages.");
+            grunt.log.debug("Extracted:\n" + debugExtractedLines.join("\n"));
+            grunt.log.debug("Expected:\n" + debugExpectedLines.join("\n"));
+            return false;
+        } else {
+            grunt.log.ok("Extracted messages matches expected messages.");
+        }
+    });
+
+    grunt.registerTask("default", ["xgettext", "compare"]);
 
 };
