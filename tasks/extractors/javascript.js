@@ -123,6 +123,7 @@ module.exports = function(file, options) {
             if (_.contains(fn, flattenIdentifier(callee))) {
                 parseInvocation(syntax);
             } else {
+                scan(callee);
                 _.each(syntax.arguments, function(argumentSyntax) {
                     scan(argumentSyntax);
                 });
@@ -144,6 +145,10 @@ module.exports = function(file, options) {
         case "LogicalExpression":
             scan(syntax.left);
             scan(syntax.right);
+            break;
+        case "MemberExpression":
+            scan(syntax.object);
+            scan(syntax.property);
             break;
         case "NewExpression":
             _.each(syntax.arguments, function(argumentSyntax) {

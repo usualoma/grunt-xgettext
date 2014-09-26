@@ -17,7 +17,7 @@ module.exports = function(grunt) {
         xgettext: {
             default_options: {
                 options: {
-                    functionName: ["tr", "i18n.tr"],
+                    functionName: ["tr", "i18n.tr", "i18n"],
                     potFile: "messages.pot"
                 },
 
