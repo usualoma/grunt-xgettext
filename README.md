@@ -159,13 +159,12 @@ The reason this fails is because the input to the tr() function will be differen
 it is called, and therefore does not have a stable key for looking up the proper translation.
 
 Note that concatenating multiple strings to create a single (multi-line) translatable string
-_does_ work, provided all parts use the same type of quotes. Example:
+_does_ work with JavaScript files. Example:
 
     tr("This is the first line " +
        "of a multiline translatable message")
 
-Finally, you can pass context and comments through an options object. This is currently only
-supported by the JavaScript extractor:
+Finally, you can pass context and comments through an options object. Examples:
 
     tr("September", { comment: "Translators: use all lower-case if months are not " +
                                "capitalized in your language" })
@@ -174,6 +173,10 @@ supported by the JavaScript extractor:
     tr("May", { context: "Abbreviation", comment: "Abbreviation of May" })
     tr("September")
     tr("Sept.", { context: "Abbreviation", comment: "Abbreviation of September" })
+
+For Handlebars templates, you can achieve the same effect through named arguments:
+
+    {{tr "May" context="Abbreviation" comment="Abbreviation of May"}}
 
 
 ### Usage Examples

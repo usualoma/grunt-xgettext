@@ -87,3 +87,22 @@ define("l10n", ["i18n", "jquery", "lodash"], function(i18n, $, _) {
     return l10n;
 
 });
+
+// another snippet
+var ArchivedRequestsView = AdminRequestsView.extend({
+
+    initialize: function(options) {
+
+        options = options || {};
+
+        options.filters = [
+            { name: i18n("All requests"), url: "requests/archive/" },
+            { name: i18n("My requests"), url: "requests/myarchive/" }
+        ];
+
+        options.title = i18n("Archive");
+
+        AdminRequestsView.prototype.initialize.call(this, options);
+    }
+
+});

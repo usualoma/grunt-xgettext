@@ -13,6 +13,10 @@ msgstr ""
 msgid "Boom"
 msgstr ""
 
+msgctxt "Nederlands leren"
+msgid "Roos"
+msgstr ""
+
 msgid "Mien"
 msgstr ""
 
@@ -85,4 +89,13 @@ msgid "Yesterday at %1"
 msgstr ""
 
 msgid "%1 at %2"
+msgstr ""
+
+msgid "All requests"
+msgstr ""
+
+msgid "My requests"
+msgstr ""
+
+msgid "Archive"
 msgstr ""

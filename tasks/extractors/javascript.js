@@ -14,7 +14,7 @@ var _ = require("lodash");
 
 module.exports = function(file, options) {
 
-    var messages = {};
+    var collector = new (require("../lib/collector"));
 
     var fn = _.flatten([ options.functionName ]);
 
@@ -75,18 +75,7 @@ module.exports = function(file, options) {
                 message.context = options.context;
             }
 
-            var key = (message.context ? message.context + ":" : "") + singular;
-            if (messages[key]) {
-                if (messages[key].comment) {
-                    if (message.comment) {
-                        messages[key].comment += "\n" + message.comment;
-                    }
-                } else {
-                    messages[key].comment = message.comment;
-                }
-            } else {
-                messages[key] = message;
-            }
+            collector.addMessage(message);
         } else {
             grunt.log.debug("No arguments to translation method");
         }
@@ -111,6 +100,11 @@ module.exports = function(file, options) {
         grunt.log.debug("Scanning node: " + syntax.type);
 
         switch (syntax.type) {
+        case "ArrayExpression":
+            _.each(syntax.elements, function(elementSyntax) {
+                scan(elementSyntax);
+            });
+            break;
         case "AssignmentExpression":
             scan(syntax.right);
             break;
@@ -222,5 +216,5 @@ module.exports = function(file, options) {
     var contents = grunt.file.read(file);
     scan(esprima.parse(contents));
 
-    return messages;
+    return collector.messages;
 };

@@ -11,71 +11,136 @@
 var grunt = require("grunt");
 var _ = require("lodash");
 
-/**
- * Get all messages of a content
- * @param  {String} content     content on which extract gettext calls
- * @param  {Regex} regex        first level regex
- * @param  {Regex} subRE        second level regex
- * @param  {Regex} quoteRegex   regex for quotes
- * @param  {String} quote       quote: " or '
- * @param  {Object} options     task options
- * @return {Object}             messages in a JS pot alike
- *                                       {
- *                                           singularKey: {
- *                                               singular: singularKey,
- *                                               plural: pluralKey,     // present only if plural
- *                                               message: ""
- *
- *                                           },
- *                                           ...
- *                                       }
- */
-function getMessages(content, regex, subRE, quoteRegex, quote, options) {
-    var messages = {}, result;
+function tokenize(substring) {
 
-    while ((result = regex.exec(content)) !== null) {
-        var strings = result[1],
-            singularKey = void 0;
+    grunt.log.debug("Tokenizing: " + substring);
 
-        while ((result = subRE.exec(strings)) !== null) {
-            var string = options.processMessage(result[1].replace(quoteRegex, quote));
-
-            // if singular form already defined add message as plural
-            if (typeof singularKey !== 'undefined') {
-                messages[singularKey].plural = string;
-            // if not defined init message object
+    var tokens = [], token = null;
+    for (var i = 0; i < substring.length; i++) {
+        var char = substring.charAt(i);
+        if (token) {
+            switch (token.type) {
+            case "identifier":
+                if (char === "=") {
+                    token.type = "hash";
+                    token.key = token.value;
+                    token.value = null;
+                } else if (/\s/.test(char)) {
+                    tokens.push(token);
+                    token = null;
+                } else {
+                    token.value += char;
+                }
+                break;
+            case "hash":
+                if (token.value) {
+                    if (token.value.type === "string") {
+                        if (char === token.value.quote) {
+                            tokens.push(token);
+                            token = null;
+                        } else {
+                            if (char === "\\") {
+                                i++;
+                                char = substring.charAt(i);
+                            }
+                            token.value.value += char;
+                        }
+                    } else if (/\s/.test(char)) {
+                        tokens.push(token);
+                        token = null;
+                    } else {
+                        token.value.value += char;
+                    }
+                } else {
+                    if (char === "'" || char === '"') {
+                        token.value = { type: "string", value: "", quote: char };
+                    } else if (/\d/.test(char)) {
+                        token.value = { type: "number", value: "" };
+                    } else if (/\s/.test(char)) {
+                        // continue
+                    } else {
+                        token.value = { type: "identifier", value: "" };
+                    }
+                }
+                break;
+            case "number":
+                if (/\s/.test(char)) {
+                    tokens.push(token);
+                    token = null;
+                } else {
+                    token.value.value += char;
+                }
+                break;
+            case "string":
+                if (char === token.quote) {
+                    tokens.push(token);
+                    token = null;
+                } else {
+                    if (char === "\\") {
+                        i++;
+                        char = substring.charAt(i);
+                    }
+                    token.value += char;
+                }
+                break;
+            }
+        } else {
+            if (char === "'" || char === '"') {
+                token = { type: "string", value: "", quote: char };
+            } else if (/\d/.test(char)) {
+                token = { type: "number", value: char };
+            } else if (/\s/.test(char)) {
+                // continue
             } else {
-                singularKey = string;
-                messages[singularKey] = {
-                    singular: string,
-                    message: ""
-                };
+                token = { type: "identifier", value: char };
             }
         }
     }
+    if (token) {
+        tokens.push(token);
+    }
 
-    return messages;
+    grunt.log.debug("Result: " + JSON.stringify(tokens));
+
+    return tokens;
 }
 
 module.exports = function(file, options) {
+
+    var collector = new (require("../lib/collector"));
+
     var contents = grunt.file.read(file).replace("\n", " "),
-        fn = _.flatten([ options.functionName ]),
-        messages = {};
-
-    var extractStrings = function(quote, fn) {
-        var regex = new RegExp("\\{\\{\\s*" + fn + "\\s+((?:" +
-            quote + "(?:[^" + quote + "\\\\]|\\\\.)+" + quote +
-            "\\s*)+)[^}]*\\s*\\}\\}", "g");
-        var subRE = new RegExp(quote + "((?:[^" + quote + "\\\\]|\\\\.)+)" + quote, "g");
-        var quoteRegex = new RegExp("\\\\" + quote, "g");
-
-        _.extend(messages, getMessages(contents, regex, subRE, quoteRegex, quote, options));
-    };
+        fn = _.flatten([ options.functionName ]);
 
     _.each(fn, function(func) {
-        extractStrings("'", func);
-        extractStrings('"', func);
+        var regex = new RegExp("\\{\\{\\s*" + func + "\\s+(.*?)\\}\\}", "g");
+        var result;
+        while ((result = regex.exec(contents)) !== null) {
+            var tokens = tokenize(result[1]);
+            if (tokens.length === 0 || tokens[0].type !== "string") {
+                continue;
+            }
+
+            var message = {
+                singular: tokens[0].value,
+                message: ""
+            };
+            if (tokens.length > 2 && tokens[1].type === "string") {
+                message.plural = tokens[1].value;
+            }
+            _.each(tokens, function(token) {
+                if (token.type === "hash") {
+                    if (token.key === "comment" || token.key === "context" &&
+                        token.value.type === "string") {
+
+                        message[token.key] = token.value.value;
+                    }
+                }
+            });
+
+            collector.addMessage(message);
+        }
     });
 
-    return messages;
+    return collector.messages;
 };
