@@ -36,6 +36,11 @@ function test5() {
     tr("Sept.", { context: "Abbreviation", comment: "Abbreviation of September" })
 }
 
+function test6() {
+    /// abbreviation: %1 day(s) ago
+    tr("%1 d", "%1 d", days);
+}
+
 // snippet of real-life code
 define("l10n", ["i18n", "jquery", "lodash"], function(i18n, $, _) {
 

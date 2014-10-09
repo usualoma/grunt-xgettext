@@ -71,7 +71,7 @@ module.exports = function(grunt) {
             grunt.log.debug("Expected:\n" + debugExpectedLines.join("\n"));
             return false;
         } else {
-            grunt.log.ok("Extracted messages matches expected messages.");
+            grunt.log.ok("Extracted messages match expected messages.");
         }
     });
 

@@ -62,17 +62,19 @@ module.exports = function(file, options) {
             }
 
             var message = {
-                singular: singular,
-                message: ""
+                comment: options.comment || "",
+                context: options.context || "",
+                message: "",
+                plural: plural || "",
+                singular: singular
             };
-            if (plural) {
-                message.plural = plural;
-            }
-            if (options.comment) {
-                message.comment = options.comment;
-            }
-            if (options.context) {
-                message.context = options.context;
+
+            var lineIndex = syntax.loc.start.line - 2; // loc.start.line is 1-based
+            while (lineIndex > 0 && lines[lineIndex].slice(0, 3) === "///") {
+                message.comment = lines[lineIndex].slice(3).trim() +
+                                  (options.comment ? "\n" : "") +
+                                  options.comment;
+                lineIndex--;
             }
 
             collector.addMessage(message);
@@ -214,7 +216,8 @@ module.exports = function(file, options) {
     }
 
     var contents = grunt.file.read(file);
-    scan(esprima.parse(contents));
+    var lines = _.map(contents.split("\n"), function(line) { return line.trim(); });
+    scan(esprima.parse(contents, { loc: true }));
 
     return collector.messages;
 };
