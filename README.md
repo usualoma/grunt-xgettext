@@ -238,6 +238,25 @@ grunt.initConfig({
 }
 ```
 
+## Changelog
+
+### 0.3.3
+
+* Introduced support for triple-slash translator comments in JavaScript extractor.
+
+### 0.3.2
+
+* Introduced new Handlebars extractor, with support for context and comment options.
+* Bugfixes for JavaScript extractor.
+
+### 0.3.1
+
+* Bugfixes for JavaScript extractor.
+
+### 0.3.0
+
+* Introduced new JavaScript extractor, with support for context and comment options.
+
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for
 any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
