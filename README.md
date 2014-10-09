@@ -252,6 +252,10 @@ any new or changed functionality. Lint and test your code using [Grunt](http://g
 
 ## Release History
 
+### 0.3.4
+
+* Bugfixes for multi-line translator comments.
+
 ### 0.3.3
 
 * Introduced support for triple-slash translator comments in JavaScript extractor.
