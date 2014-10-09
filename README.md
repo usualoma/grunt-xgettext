@@ -164,7 +164,9 @@ _does_ work with JavaScript files. Example:
     tr("This is the first line " +
        "of a multiline translatable message")
 
-Finally, you can pass context and comments through an options object. Examples:
+### Context and Comments
+
+Finally, you can pass context and comments for your messages by using an options object. Examples:
 
     tr("September", { comment: "Translators: use all lower-case if months are not " +
                                "capitalized in your language" })
@@ -177,6 +179,11 @@ Finally, you can pass context and comments through an options object. Examples:
 For Handlebars templates, you can achieve the same effect through named arguments:
 
     {{tr "May" context="Abbreviation" comment="Abbreviation of May"}}
+
+For JavaScript, you can also use triple-slash comments to provide translator comment:
+
+    /// Translators: use all lower-case if months are not capitalized in your language
+    tr("September")
 
 
 ### Usage Examples
