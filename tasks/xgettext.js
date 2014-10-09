@@ -48,7 +48,7 @@ module.exports = function(grunt) {
             if (definition.comment) {
                 buffer += _.map(definition.comment.split("\n"), function(commentLine) {
                     return "#. " + commentLine + "\n";
-                });
+                }).join("");
             }
             if (definition.context) {
                 buffer += "msgctxt " + escapeString(definition.context) + "\n";

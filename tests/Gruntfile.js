@@ -50,7 +50,8 @@ module.exports = function(grunt) {
             var expectedLine = expectedLines[i] || "";
             var extractedLine = extractedLines[i] || "";
 
-            if (expectedLine.slice(0, 1) === "#" && extractedLine.slice(0, 1) === "#") {
+            if (expectedLine.slice(0, 1) === "#" && expectedLine.slice(1, 2) !== "." &&
+                extractedLine.slice(0, 1) === "#" && extractedLine.slice(1, 2) !== ".") {
                 continue;
             }
 

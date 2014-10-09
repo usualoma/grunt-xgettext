@@ -9,6 +9,7 @@
 "use strict";
 
 var grunt = require("grunt");
+var _ = require("lodash");
 
 /**
  * Convenience object for collecting the extracted messages before passing them back to the main
@@ -37,7 +38,8 @@ Collector.prototype.addMessage = function(message) {
     if (existingMessage) {
         if (existingMessage.comment) {
             if (message.comment) {
-                existingMessage.comment += "\n" + message.comment;
+                existingMessage.comment = _.unique(existingMessage.comment.split("\n")
+                                                   .concat(message.comment.split("\n"))).join("\n");
             }
         } else {
             existingMessage.comment = message.comment;

@@ -39,6 +39,10 @@ function test5() {
 function test6() {
     /// abbreviation: %1 day(s) ago
     tr("%1 d", "%1 d", days);
+
+    /// Translators: use all lower-case if months are not capitalized in your language
+    /// Abbreviation of May
+    tr("May", { context: "Abbreviation" });
 }
 
 // snippet of real-life code

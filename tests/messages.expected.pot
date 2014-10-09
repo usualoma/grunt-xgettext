@@ -59,6 +59,7 @@ msgid "May"
 msgstr ""
 
 #. Abbreviation of May
+#. Translators: use all lower-case if months are not capitalized in your language
 msgctxt "Abbreviation"
 msgid "May"
 msgstr ""

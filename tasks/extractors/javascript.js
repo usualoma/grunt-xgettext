@@ -72,8 +72,8 @@ module.exports = function(file, options) {
             var lineIndex = syntax.loc.start.line - 2; // loc.start.line is 1-based
             while (lineIndex > 0 && lines[lineIndex].slice(0, 3) === "///") {
                 message.comment = lines[lineIndex].slice(3).trim() +
-                                  (options.comment ? "\n" : "") +
-                                  options.comment;
+                                  (message.comment ? "\n" : "") +
+                                  message.comment;
                 lineIndex--;
             }
 
