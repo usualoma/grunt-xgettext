@@ -252,6 +252,10 @@ any new or changed functionality. Lint and test your code using [Grunt](http://g
 
 ## Release History
 
+### 0.3.5
+
+* Added Underscore templates extractor.
+
 ### 0.3.4
 
 * Bugfixes for multi-line translator comments.
