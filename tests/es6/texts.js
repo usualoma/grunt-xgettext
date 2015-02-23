@@ -20,14 +20,8 @@ export default TestCase;
 export default Framework.Controller.extend({
     init: function() {
         var [name, b, c] = arguments[0];
+
+        /// Say hallo will contain a name
         this.set("foobar", tr("hallo {{name}} ", {name: name}));
-
-        tr("September", { comment: "Translators: use all lower-case if months are not " +
-                               "capitalized in your language" })
-
-        tr("May");
-        tr("May", { context: "Abbreviation", comment: "Abbreviation of May" });
-        tr("September");
-        tr("Sept.", { context: "Abbreviation", comment: "Abbreviation of September" });
     }
-})
+});
