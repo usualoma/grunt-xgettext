@@ -18,13 +18,17 @@ module.exports = function(grunt) {
             default_options: {
                 options: {
                     functionName: ["tr", "i18n.tr", "i18n"],
-                    potFile: "messages.pot"
+                    potFile: "messages.pot",
+                    es6: {
+                        experimental: true
+                    }
                 },
 
                 files: {
                     handlebars: ["assets/*.handlebars"],
                     html: ["assets/*.html"],
-                    javascript: ["assets/*.js"]
+                    javascript: ["assets/*.js"],
+                    es6: ["es6/*.js"]
                 }
             }
         }
