@@ -118,6 +118,9 @@ module.exports = function(file, options) {
             var callee = syntax.callee;
             if (_.contains(fn, flattenIdentifier(callee))) {
                 parseInvocation(syntax);
+                _.each(syntax.arguments, function(argumentSyntax) {
+                    scan(argumentSyntax);
+                });
             } else {
                 scan(callee);
                 _.each(syntax.arguments, function(argumentSyntax) {
