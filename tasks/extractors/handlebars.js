@@ -113,7 +113,7 @@ module.exports = function(file, options) {
         fn = _.flatten([ options.functionName ]);
 
     _.each(fn, function(func) {
-        var regex = new RegExp("\\{\\{\\s*" + func + "\\s+(.*?)\\}\\}", "g");
+        var regex = new RegExp("(?:\\{\\{|\\()\\s*" + func + "\\s+(.*?)\\s*(?:\\}\\}|\\))", "g");
         var result;
         while ((result = regex.exec(contents)) !== null) {
             var tokens = tokenize(result[1]);
